@@ -13,6 +13,11 @@ This code is tested on the official deal.II [docker image (v9.4.0-focal)](https:
 * Adaptive mesh based on gradients of the phase field. 
 * Parallelism with MPI, working smoothly with multiple nodes on HPC clusters. 
 
+<img width="967" alt="image" src="https://github.com/user-attachments/assets/fd18a82e-bf44-4bec-b9fe-43c09105f8f6">
+
+<img width="674" alt="image" src="https://github.com/user-attachments/assets/ceafb404-92bb-46bb-8e9e-b0e63221f4b7">
+
+
 ### Usage
 
 * Mesh file: It uses meshes defined in ABAQUS-generated .inp files (see `meshes/singleNotchDense.inp` for example).
