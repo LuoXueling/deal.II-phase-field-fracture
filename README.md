@@ -1,8 +1,17 @@
 ## deal.II phase field fracture
 
+A deal.II implementation of phase field fracture model with multiphysics interfaces, adaptive mesh, and MPI compatibility. 
+
 ### Install
 
 This code is tested on the official deal.II [docker image (v9.4.0-focal)](https://hub.docker.com/r/dealii/dealii/tags).
+
+### Features
+
+* Multiphysics interfaces with the staggered scheme. For a new physics added to the existing system, one only needs to implement (1) how residual (or the Right Hand Side) and tangent stiffness matrix (or stiffness matrix) are calculated on Gaussian points, (2) calculating visualized fields for the physics, and (3) defining the staggered scheme.
+* Problem definition with (1) an ABAQUS mesh, (2) a text file describing Dirichlet or Neumann boundary conditions (based on "Surface"s defined in Abaqus .inp file), and (3) a parameter file for computing setups, preferably without modifying any code.
+* Adaptive mesh based on gradients of the phase field. 
+* Parallelism with MPI, working smoothly with multiple nodes on HPC clusters. 
 
 ### Usage
 
