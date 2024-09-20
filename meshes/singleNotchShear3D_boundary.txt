@@ -1,0 +1,11 @@
+1 velocity 0 1
+1 dirichlet 1 0
+1 dirichlet 2 0
+2 dirichlet 0 0
+2 dirichlet 1 0
+2 dirichlet 2 0
+3 dirichlet 1 0
+3 dirichlet 2 0
+4 dirichlet 1 0
+4 dirichlet 2 0
+

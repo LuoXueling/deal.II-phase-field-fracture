@@ -1,0 +1,93 @@
+subsection Project
+  set Project name = singleNotchTension
+  set Mesh from = ../meshes/singleNotchRaw.inp
+  set Boundary from = ../meshes/singleNotchTension_boundary.txt
+  set Output directory = ../output/
+  set Load sequence from = script
+  set Enable phase field = true
+
+  # Debug
+  set Debug output = true
+end
+
+subsection Runtime
+  # Time step
+  set Max No of timesteps = 2000
+  set Timestep size = 1.0e-5
+  set Timestep size to switch to = 1.0e-6
+  set Switch timestep after steps = 500
+
+  # Solver
+  set Use Direct Inner Solver = false
+  set Newton lower bound = 1.0e-6
+  set Newton maximum steps = 50
+  set Upper Newton rho = 0.999
+  set Maximum number of adjustment steps of Newton solution = 10
+  set Line search damping = 0.5
+  set Save vtk per step = 10
+
+  # Phase field scheme
+  set Use monolithic = false
+
+  # "linear" to solve K_phi * phi = r_phi
+  # "newton" to solve K_phi * delta phi = r_phi, phi = phi - delta phi
+  set Phase field update = newton
+
+  # "none" for no decomposition (degradation acts on the entire residual and the tangent stiffness matrix)
+  # "eigen" for eigen decomposition (http://dx.doi.org/10.1016/j.commatsci.2016.04.009)
+  # "hybrid" for hybrid decomposition with eigen decomposition acting on residual (https://doi.org/10.1007/s00466-014-1109-y) (https://doi.org/10.1016/j.cma.2022.115535)
+  # "sphere" for spherical decompostion (volumetric and deviatoric parts) (https://doi.org/10.1016/j.jmps.2009.04.011)
+  set Decomposition = hybrid
+
+  # Numerical
+  set Constant small quantity k = 1.0e-6
+end
+
+subsection Material
+    set Young's modulus = 210000
+    set Poisson's ratio = 0.3
+    set Critical energy release rate = 2.7
+    set Phase field length scale = 0.015
+    set Plane state = strain
+end
+
+subsection Finite element system
+  # Physical dimension
+  set Physical dimension = 2
+
+  # Displacement system polynomial order
+  set Polynomial degree = 1
+
+  # Mesh refinement
+  set Refine = true
+
+  # During nucleation of cracks, the diffused crack is
+  # phi*exp(-|x|/l_phi), and the absolute gradient field is
+  # 1/l_phi*phi_max*exp(-|x|/l_phi).
+
+  # If the crack is fully generated (phi_max=1). We want (and only want)
+  # cells, whose absolute gradient values (|grad|) are higher than that at
+  # |x|=a2*l_phi (|grad|>|grad_2|=1/l_phi*exp(-a2)), to be refined. The
+  # region is defined here as influential region with a width a2*l_phi, which
+  # ultimately impacts our overall computational cost.
+
+  # For growing cracks (phi_max<1), we want cells satisfying
+  #                   |grad|>1/l_phi*phi_max*exp(-a2)
+  # to be refined. Since phi<=phi_max (i.e., the investigated cell may not be
+  # at the center of cracks), if we directly use 1/l_phi*phi*exp(-a2) as the
+  # threshold, the final refined region is enlarged (when the phi value at
+  # somewhere else reaches 1), compared to the condition |grad|>|grad_2|
+  # stated above. Therefore, we decide to set a reference value of phi_max,
+  # denoted as phi_ref, so that when phi is growing and when the maximum phi
+  # reaches phi_ref, nearby cells within the initial influential region
+  # |x|<a1*l_phi and
+  #                 |grad|>|grad_1|=1/l_phi*phi_ref*exp(-a1)
+  # is refined.
+  # To make the criteria consistent when phi_max reaches 1, we expect
+  #                   exp(-a2)=phi_ref*exp(-a1)
+  # and this is how phi_ref is determined.
+  set Phase field initial influential ratio (for refinement) = 2
+  set Phase field final influential ratio (for refinement) = 3
+  set Minimum relative size of refined cells w.r.t l_phi = 0.2
+end
+
