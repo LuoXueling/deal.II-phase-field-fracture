@@ -95,6 +95,10 @@ public:
   std::vector<IndexSet> fields_locally_relevant_dofs;
   AffineConstraints<double> constraints_hanging_nodes;
   AffineConstraints<double> constraints_all;
+  // Fatigue history is only availabel at gaussian points, we have to
+  // project them to nodes, and then we can calculate gradients using shape_grad
+  // https://www.dealii.org/current/doxygen/deal.II/step_18.html
+  FullMatrix<double> qpoint_to_dof_matrix;
 
   /*
    * Solutions
@@ -124,8 +128,11 @@ AbstractField<dim>::AbstractField(std::vector<unsigned int> n_components,
     : fields(n_components, names, boundary_from, ctl),
       fe(fields.FE_Q_sequence, fields.FE_Q_dim_sequence),
       dof_handler(ctl.triangulation), update_scheme_timestep(update_scheme),
-      direct_solver(direct_solver_control) {
+      direct_solver(direct_solver_control),
+      qpoint_to_dof_matrix(fe.dofs_per_cell, ctl.quadrature_formula.size()) {
   newton_ctl = select_newton_variation<dim>(ctl.params.adjustment_method, ctl);
+  FETools::compute_projection_from_quadrature_points_matrix(
+      fe, ctl.quadrature_formula, ctl.quadrature_formula, qpoint_to_dof_matrix);
 }
 
 template <int dim> void AbstractField<dim>::setup_system(Controller<dim> &ctl) {
