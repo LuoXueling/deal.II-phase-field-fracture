@@ -254,6 +254,7 @@ public:
   int last_refinement_timestep_number;
   double current_timestep;
   double old_timestep;
+  double dt;
 
   TableHandler statistics;
 
@@ -283,7 +284,7 @@ Controller<dim>::Controller(Parameters::AllParameters &prms)
                       TimerOutput::wall_times),
       time(0), timestep_number(0), output_timestep_number(0),
       current_timestep(0), old_timestep(0),
-      last_refinement_timestep_number(-1) {
+      last_refinement_timestep_number(-1), dt(0) {
   statistics.set_auto_fill_mode(true);
 }
 

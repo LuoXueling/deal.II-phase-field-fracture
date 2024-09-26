@@ -21,6 +21,7 @@ public:
   double get_timestep(Controller<dim> &ctl) {
     last_time = ctl.time;
     new_timestep = current_timestep(ctl);
+    ctl.dt = new_timestep;
     return new_timestep;
   }
 
@@ -35,6 +36,7 @@ public:
     failure_criteria(ctl);
     record(ctl);
     ctl.time += new_timestep;
+    ctl.dt = new_timestep;
   }
 
   virtual bool fail(double newton_reduction, Controller<dim> &ctl) {
