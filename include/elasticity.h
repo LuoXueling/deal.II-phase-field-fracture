@@ -340,7 +340,7 @@ void Elasticity<dim>::output_results(DataOut<dim> &data_out,
 }
 
 template <int dim> void Elasticity<dim>::compute_load(Controller<dim> &ctl) {
-  const QGaussLobatto<dim - 1> face_quadrature_formula(ctl.params.poly_degree + 1);
+  const QGauss<dim - 1> face_quadrature_formula(ctl.params.poly_degree + 1);
   FEFaceValues<dim> fe_face_values((this->fe), face_quadrature_formula,
                                    update_values | update_gradients |
                                        update_normal_vectors |

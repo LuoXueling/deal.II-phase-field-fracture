@@ -220,8 +220,8 @@ template <int dim> bool PhaseFieldFracture<dim>::refine_grid() {
     parallel::distributed::ContinuousQuadratureDataTransfer<dim, PointHistory>
         point_history_transfer(
             FE_Q<dim>(QGaussLobatto<1>((this->ctl).params.poly_degree+1)),
-            QGaussLobatto<dim>((this->ctl).params.poly_degree + 1),
-            QGaussLobatto<dim>((this->ctl).params.poly_degree + 1));
+            QGauss<dim>((this->ctl).params.poly_degree + 1),
+            QGauss<dim>((this->ctl).params.poly_degree + 1));
     point_history_transfer.prepare_for_coarsening_and_refinement(
         (this->ctl).triangulation, (this->ctl).quadrature_point_history);
 

@@ -280,7 +280,7 @@ void AbstractField<dim>::setup_neumann_boundary_condition(
   ctl.debug_dcout << "Setting neumann boundary" << std::endl;
   neumann_rhs = 0;
 
-  const QGaussLobatto<dim - 1> face_quadrature_formula(ctl.params.poly_degree + 1);
+  const QGauss<dim - 1> face_quadrature_formula(ctl.params.poly_degree + 1);
   const unsigned int n_face_q_points = face_quadrature_formula.size();
   const unsigned int dofs_per_cell = fe.dofs_per_cell;
   FEFaceValues<dim> fe_face_values(fe, face_quadrature_formula,
