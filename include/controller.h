@@ -21,6 +21,7 @@ public:
     _update(name, solution, solution_independent_buffer,
             solution_independent_old, solution_independent_increment_buffer,
             scheme);
+    finalize_scheme_independent[name] = scheme;
   };
   void _update(std::string name, double solution,
                std::map<std::string, double> &dict,
@@ -42,7 +43,7 @@ public:
       AssertThrow(false,
                   ExcNotImplemented("Point history update scheme is illegal."));
     }
-    increment_dict[name] = res - _get(name, old_dict, 0.0);
+    increment_dict[name] = res - _get(name, old_dict, res);
     dict[name] = res;
     finalize_scheme[name] = scheme;
   }
@@ -174,7 +175,8 @@ public:
     std::vector<std::string> names = get_names();
     for (unsigned int i = 0; i < finalize_scheme.size() * 2; ++i) {
       if (i < finalize_scheme.size()) {
-        if (solution_buffer.find(names[i]) != solution_buffer.end()) {
+        if (finalize_scheme_independent.find(names[i]) ==
+            finalize_scheme_independent.end()) {
           solution_buffer[names[i]] = values[i];
           solution_old[names[i]] = values[i];
         } else {
@@ -182,8 +184,9 @@ public:
           solution_independent_old[names[i]] = values[i];
         }
       } else {
-        if (solution_buffer.find(names[i - finalize_scheme.size()]) !=
-            solution_buffer.end()) {
+        if (finalize_scheme_independent.find(
+                names[i - finalize_scheme.size()]) ==
+            finalize_scheme_independent.end()) {
           solution_increment_buffer[names[i - finalize_scheme.size()]] =
               values[i];
           solution_increment_old[names[i - finalize_scheme.size()]] = values[i];
@@ -217,7 +220,8 @@ public:
   std::map<std::string, double> solution_independent_increment_buffer;
   std::map<std::string, double> solution_independent_increment_old;
 
-  inline static std::map<std::string, std::string> finalize_scheme;
+  inline static std::map<std::string, std::string> finalize_scheme,
+      finalize_scheme_independent;
 };
 
 template <int dim> class Controller {
@@ -283,8 +287,8 @@ Controller<dim>::Controller(Parameters::AllParameters &prms)
       computing_timer(mpi_com, dcout, TimerOutput::never,
                       TimerOutput::wall_times),
       time(0), timestep_number(0), output_timestep_number(0),
-      current_timestep(0), old_timestep(0),
-      last_refinement_timestep_number(-1), dt(0) {
+      current_timestep(0), old_timestep(0), last_refinement_timestep_number(-1),
+      dt(0) {
   statistics.set_auto_fill_mode(true);
 }
 
